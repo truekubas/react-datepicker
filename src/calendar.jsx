@@ -329,16 +329,9 @@ export default class Calendar extends React.Component {
   };
 
   renderPreviousYearButton = () => {
-    const allPrevDaysDisabled = allDaysDisabledBefore(
-      this.state.date,
-      "year",
-      this.props
-    );
-
     if (
       (!this.props.forceShowYearNavigation &&
-        !this.props.showDisabledYearhNavigation &&
-        allPrevDaysDisabled) ||
+        !this.props.showDisabledYearhNavigation) ||
       this.props.showTimeSelectOnly
     ) {
       return;
@@ -351,11 +344,6 @@ export default class Calendar extends React.Component {
 
     let clickHandler = this.decreaseYear;
 
-    if (allPrevDaysDisabled && this.props.showDisabledMonthNavigation) {
-      classes.push("react-datepicker__navigation--previous-year--disabled");
-      clickHandler = null;
-    }
-
     return (
       <button
         type="button"
@@ -366,16 +354,9 @@ export default class Calendar extends React.Component {
   };
 
   renderNextYearButton = () => {
-    const allNextDaysDisabled = allDaysDisabledAfter(
-      this.state.date,
-      "year",
-      this.props
-    );
-
     if (
       (!this.props.forceShowYearNavigation &&
-        !this.props.showDisabledYearNavigation &&
-        allNextDaysDisabled) ||
+        !this.props.showDisabledYearNavigation) ||
       this.props.showTimeSelectOnly
     ) {
       return;
@@ -395,11 +376,6 @@ export default class Calendar extends React.Component {
     }
 
     let clickHandler = this.increaseYear;
-
-    if (allNextDaysDisabled && this.props.showDisabledYearNavigation) {
-      classes.push("react-datepicker__navigation--next-year--disabled");
-      clickHandler = null;
-    }
 
     return (
       <button
