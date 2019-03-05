@@ -331,7 +331,7 @@ export default class Calendar extends React.Component {
   renderPreviousYearButton = () => {
     if (
       (!this.props.forceShowYearNavigation &&
-        !this.props.showDisabledYearhNavigation) ||
+        !this.props.showDisabledYearNavigation) ||
       this.props.showTimeSelectOnly
     ) {
       return;
