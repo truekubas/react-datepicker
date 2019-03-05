@@ -74,6 +74,7 @@ export default class Calendar extends React.Component {
     onMonthChange: PropTypes.func,
     onYearChange: PropTypes.func,
     forceShowMonthNavigation: PropTypes.bool,
+    forceShowYearNavigation: PropTypes.bool,
     onDropdownFocus: PropTypes.func,
     onSelect: PropTypes.func.isRequired,
     onWeekSelect: PropTypes.func,
@@ -109,6 +110,7 @@ export default class Calendar extends React.Component {
     shouldCloseOnSelect: PropTypes.bool,
     useShortMonthInDropdown: PropTypes.bool,
     showDisabledMonthNavigation: PropTypes.bool,
+    showDisabledYearNavigation: PropTypes.bool,
     previousMonthButtonLabel: PropTypes.string,
     nextMonthButtonLabel: PropTypes.string,
     renderCustomHeader: PropTypes.func,
@@ -121,6 +123,7 @@ export default class Calendar extends React.Component {
       monthsShown: 1,
       monthSelectedIn: 0,
       forceShowMonthNavigation: false,
+      showDisabledYearNavigation: false,
       timeCaption: "Time",
       previousMonthButtonLabel: "Previous Month",
       nextMonthButtonLabel: "Next Month"
@@ -195,6 +198,15 @@ export default class Calendar extends React.Component {
     return current;
   };
 
+  increaseYear = () => {
+    this.setState(
+      {
+        date: addMonths(this.state.date, 12)
+      },
+      () => this.handleYearChange(this.state.date)
+    );
+  };
+
   increaseMonth = () => {
     this.setState(
       {
@@ -210,6 +222,15 @@ export default class Calendar extends React.Component {
         date: subMonths(this.state.date, 1)
       },
       () => this.handleMonthChange(this.state.date)
+    );
+  };
+
+  decreaseYear = () => {
+    this.setState(
+      {
+        date: subMonths(this.state.date, 12)
+      },
+      () => this.handleYearChange(this.state.date)
     );
   };
 
@@ -305,6 +326,88 @@ export default class Calendar extends React.Component {
     return this.props.useWeekdaysShort
       ? getWeekdayShortInLocale(day, locale)
       : getWeekdayMinInLocale(day, locale);
+  };
+
+  renderPreviousYearButton = () => {
+    const allPrevDaysDisabled = allDaysDisabledBefore(
+      this.state.date,
+      "year",
+      this.props
+    );
+
+    if (
+      (!this.props.forceShowYearNavigation &&
+        !this.props.showDisabledYearhNavigation &&
+        allPrevDaysDisabled) ||
+      this.props.showTimeSelectOnly
+    ) {
+      return;
+    }
+
+    const classes = [
+      "react-datepicker__navigation",
+      "react-datepicker__navigation--previous-year"
+    ];
+
+    let clickHandler = this.decreaseYear;
+
+    if (allPrevDaysDisabled && this.props.showDisabledMonthNavigation) {
+      classes.push("react-datepicker__navigation--previous-year--disabled");
+      clickHandler = null;
+    }
+
+    return (
+      <button
+        type="button"
+        className={classes.join(" ")}
+        onClick={clickHandler}
+      />
+    );
+  };
+
+  renderNextYearButton = () => {
+    const allNextDaysDisabled = allDaysDisabledAfter(
+      this.state.date,
+      "year",
+      this.props
+    );
+
+    if (
+      (!this.props.forceShowYearNavigation &&
+        !this.props.showDisabledYearNavigation &&
+        allNextDaysDisabled) ||
+      this.props.showTimeSelectOnly
+    ) {
+      return;
+    }
+
+    const classes = [
+      "react-datepicker__navigation",
+      "react-datepicker__navigation--next-year"
+    ];
+    if (this.props.showTimeSelect) {
+      classes.push("react-datepicker__navigation--next-year--with-time");
+    }
+    if (this.props.todayButton) {
+      classes.push(
+        "react-datepicker__navigation--next-year--with-today-button"
+      );
+    }
+
+    let clickHandler = this.increaseYear;
+
+    if (allNextDaysDisabled && this.props.showDisabledYearNavigation) {
+      classes.push("react-datepicker__navigation--next-year--disabled");
+      clickHandler = null;
+    }
+
+    return (
+      <button
+        type="button"
+        className={classes.join(" ")}
+        onClick={clickHandler}
+      />
+    );
   };
 
   renderPreviousMonthButton = () => {
@@ -632,8 +735,10 @@ export default class Calendar extends React.Component {
           "react-datepicker--time-only": this.props.showTimeSelectOnly
         })}
       >
+        {this.renderPreviousYearButton()}
         {this.renderPreviousMonthButton()}
         {this.renderNextMonthButton()}
+        {this.renderNextYearButton()}
         {this.renderMonths()}
         {this.renderTodayButton()}
         {this.renderTimeSection()}
